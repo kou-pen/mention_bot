@@ -77,6 +77,11 @@ def format_member_line(member: discord.Member) -> str:
     return f"- {member.mention} ({member.display_name})"
 
 
+def format_sender(user: discord.User | discord.Member) -> str:
+    display_name = user.display_name if isinstance(user, discord.Member) else user.name
+    return f"送信者: {user.mention} ({display_name})"
+
+
 def split_member_preview_messages(members: list[discord.Member]) -> list[str]:
     if not members:
         return []
@@ -150,7 +155,7 @@ class MessageModal(discord.ui.Modal):
             return
 
         mentions = " ".join(member.mention for member in mention_members)
-        final_message = f"{mentions}\n\n{self.message_input.value or ''}"
+        final_message = f"{mentions}\n{format_sender(interaction.user)}\n\n{self.message_input.value or ''}"
 
         if len(final_message) > MAX_MESSAGE_LENGTH:
             await interaction.followup.send(
